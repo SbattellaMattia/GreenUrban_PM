@@ -56,7 +56,94 @@ def ripartisci_costi(costo_totale, attivita_per_settimana, pesi_attivita):
         for peso_settimana in pesi_settimanali
     ]
 
+
     return costi_settimanali
+
+
+def costi_attivita(costo_totale, attivita_per_settimana, pesi_attivita):
+
+    # Calcola la frequenza di ogni attività
+    frequenza_attivita = {}
+    for settimana in attivita_per_settimana:
+        for attivita in settimana:
+            if attivita in frequenza_attivita:
+                frequenza_attivita[attivita] += 1
+            else:
+                frequenza_attivita[attivita] = 1
+
+
+    # Calcola il peso totale
+    peso_totale = sum(frequenza_attivita[attivita] * pesi_attivita[attivita] for attivita in frequenza_attivita)
+
+    # Calcola il costo per attività
+    costo_per_attivita = {}
+    for attivita, frequenza in frequenza_attivita.items():
+        costo_proporzionale = (frequenza * pesi_attivita[attivita]) / peso_totale * costo_totale
+        costo_per_attivita[attivita] = costo_proporzionale
+
+
+        #42.000 di rincaro
+        if (attivita=='2.4'):
+            costo_per_attivita[attivita]+= 5500
+        if (attivita=='4.3'):
+            costo_per_attivita[attivita]+= 5500
+        if (attivita=='4.5'):
+            costo_per_attivita[attivita]+= 5500
+        if (attivita=='2.3'):
+            costo_per_attivita[attivita]+= 8000
+        if (attivita=='2.5'):
+            costo_per_attivita[attivita]+= 8000
+        if (attivita=='3.3'):
+            costo_per_attivita[attivita]+= 8000
+        if (attivita=='3.6'):
+            costo_per_attivita[attivita]+= 1500
+        
+
+    return costo_per_attivita
+   
+
+def calcola_e_stampa_costi(costo_per_attivita, attivita_per_settimana):
+    # Inizializza i costi settimanali a 0
+    costi_settimanali = [0] * len(attivita_per_settimana)
+
+    # Conta in quante settimane appare ogni attività
+    frequenza_attivita = {}
+    for settimana in attivita_per_settimana:
+        for attivita in settimana:
+            if attivita in frequenza_attivita:
+                frequenza_attivita[attivita] += 1
+            else:
+                frequenza_attivita[attivita] = 1
+
+    # Distribuisce il costo di ogni attività nelle settimane in cui è presente
+    for settimana_idx, settimana in enumerate(attivita_per_settimana):
+        for attivita in settimana:
+            if attivita in costo_per_attivita and attivita in frequenza_attivita:
+                costi_settimanali[settimana_idx] += costo_per_attivita[attivita] / frequenza_attivita[attivita]
+
+    # Calcola i costi trimestrali
+    costi_trimestrali = []
+    costo_cumulativo = 0
+
+    print("\nDettaglio costi settimanali e trimestrali:\n")
+
+    for settimana_idx, costo in enumerate(costi_settimanali):
+        costo_cumulativo += costo
+        print(f"Settimana {settimana_idx + 1}: {costo:,.2f} €\t\t Costo cumulativo: {costo_cumulativo:,.2f} €"
+              .replace(",", "X").replace(".", ",").replace("X", "."))
+
+        # Ogni 12 settimane, calcoliamo il totale del trimestre
+        if (settimana_idx + 1) % 12 == 0:
+            trimestre = (settimana_idx + 1) // 12
+            costo_trimestre = sum(costi_settimanali[settimana_idx - 11:settimana_idx + 1])
+            costi_trimestrali.append((trimestre, costo_trimestre))
+            print(f"Totale trimestre {trimestre}: {costo_trimestre:,.2f} €\t\t Costo cumulativo: {costo_cumulativo:,.2f} €"
+                  .replace(",", "X").replace(".", ",").replace("X", "."))
+
+    # Stampa il totale del progetto
+    print(f"\nTotale progetto: {costo_cumulativo:,.2f} €".replace(",", "X").replace(".", ",").replace("X", "."))
+
+    return costi_settimanali, costi_trimestrali
 
 
 def __main__():
@@ -157,59 +244,120 @@ def __main__():
         ['1.5', '6.8'],  # Sett. 92
     ]
 
-    # Pesi delle attività (Scala da 1-2)
+
+    # pesi_attivita = {
+    #     '1.1': 1.0,
+    #     '1.2': 1.5,
+    #     '1.3': 2.0,
+    #     '1.4': 1.5,
+    #     '1.5': 1.0,
+    #     '2.1': 1.5,
+    #     '2.2': 1.5,
+    #     '2.3': 1.5,
+    #     '2.4': 1.5,
+    #     '2.5': 1.5,
+    #     '2.6': 1.5,
+    #     '3.1': 1.5,
+    #     '3.2': 2.0,
+    #     '3.3': 2.0,
+    #     '3.4': 2.0,
+    #     '3.5': 2.0,
+    #     '3.6': 2.0,
+    #     '3.7': 2.0,
+    #     '3.8': 2.0,
+    #     '3.9': 1.0,
+    #     '3.10': 1.5,
+    #     '4.1': 1.5,
+    #     '4.2': 2.0,
+    #     '4.3': 2.0,
+    #     '4.4': 2.0,
+    #     '4.5': 2.0,
+    #     '4.6': 1.0,
+    #     '4.7': 1.5,
+    #     '5.1': 1.5,
+    #     '5.2': 2.0,
+    #     '5.3': 2.0,
+    #     '5.4': 2.0,
+    #     '5.5': 2.0,
+    #     '5.6': 2.0,
+    #     '5.7': 1.0,
+    #     '5.8': 1.5,
+    #     '6.1': 1.5,
+    #     '6.2': 1.5,
+    #     '6.3': 1.5,
+    #     '6.4': 1.5,
+    #     '6.5': 1.5,
+    #     '6.6': 1.5,
+    #     '6.7': 1.5,
+    #     '6.8': 1.5,
+    #     '7.1': 1.0,
+    #     '7.2': 1.5,
+    #     '7.3': 1.0,
+    #     '7.4': 1.5,
+    #     '7.5': 1.0,
+    #     '7.6': 1.0,
+    # }
+
+    # Pesi delle attività (Scala da 1-10)
     pesi_attivita = {
-        '1.1': 1.0,
-        '1.2': 1.0,
-        '1.3': 1.0,
-        '1.4': 1.0,
-        '1.5': 1.0,
-        '2.1': 1.5,
-        '2.2': 1.5,
-        '2.3': 1.5,
-        '2.4': 1.5,
-        '2.5': 1.5,
-        '2.6': 1.5,
-        '3.1': 1.5,
-        '3.2': 2.0,
-        '3.3': 2.0,
-        '3.4': 2.0,
-        '3.5': 2.0,
-        '3.6': 2.0,
-        '3.7': 2.0,
-        '3.8': 2.0,
-        '3.9': 1.0,
-        '3.10': 1.5,
-        '4.1': 1.5,
-        '4.2': 2.0,
-        '4.3': 2.0,
-        '4.4': 2.0,
-        '4.5': 2.0,
-        '4.6': 1.0,
-        '4.7': 1.5,
-        '5.1': 1.5,
-        '5.2': 2.0,
-        '5.3': 2.0,
-        '5.4': 2.0,
-        '5.5': 2.0,
-        '5.6': 2.0,
-        '5.7': 1.0,
-        '5.8': 1.5,
-        '6.1': 1.5,
-        '6.2': 1.5,
-        '6.3': 1.5,
-        '6.4': 1.5,
-        '6.5': 1.5,
-        '6.6': 1.5,
-        '6.7': 1.5,
-        '6.8': 1.5,
-        '7.1': 1.0,
-        '7.2': 1.5,
-        '7.3': 1.0,
-        '7.4': 1.5,
-        '7.5': 1.0,
-        '7.6': 1.0,
+        '1.1': 1.0,  # Avvio
+        '1.2': 1.5,  # Pianificazione
+        '1.3': 2.0,  # Esecuzione
+        '1.4': 1.5,  # Monitoraggio e Controllo
+        '1.5': 1.0,  # Chiusura del progetto
+
+        '2.1': 2.5,  # Raccolta e analisi requisiti
+        '2.2': 3.5,  # Progetto architettonico
+        '2.3': 3.5,  # Progettazione dei pannelli modulari
+        '2.4': 3.5,  # Progettazione del sistema di irrigazione
+        '2.5': 3.5,  # Progettazione del sistema dei sensori
+        '2.6': 1.5,  # Valutazione di impatto ambientale
+
+        '3.1': 2.5,  # Raccolta e analisi dei requisiti
+        '3.2': 4.0,  # Preparazione del sito e predisposizione dell'area
+        '3.3': 10.0,  # Approvvigionamento (supporti e impianti)
+        '3.4': 4.5,  # Costruzione sostegni
+        '3.5': 4.5,  # Costruzione pannelli modulari
+        '3.6': 4.5,  # Installazione dei pannelli modulari
+        '3.7': 10.0,  # Approvvigionamento (materiale vegetale)
+        '3.8': 4.0,  # Installazione muschi e piante
+        '3.9': 1.0,  # Documentazione per la struttura
+        '3.10': 1.0, # Definizione piano di manutenzione
+
+        '4.1': 2.5,  # Raccolta e analisi dei requisiti
+        '4.2': 3.0,  # Preparazione del sito e predisposizione dell’area
+        '4.3': 10.0,  # Approvvigionamento (irrigazione)
+        '4.4': 4.0,  # Installazione degli irrigatori a goccia e collegamenti
+        '4.5': 3.5,  # Installazione dei sensori di umidità
+        '4.6': 1.0,  # Documentazione impianto di irrigazione
+        '4.7': 1.0,  # Definizione piano di manutenzione
+
+        '5.1': 2.5,  # Raccolta e analisi dei requisiti
+        '5.2': 3.5,  # Preparazione del sito e predisposizione dell’area
+        '5.3': 10.0,  # Approvvigionamento (elettronica)
+        '5.4': 3.5,  # Configurazione rete di sensori
+        '5.5': 2.5,  # Collegamento dei sensori
+        '5.6': 3.5,  # Programmazione centralina raccolta dati
+        '5.7': 1.0,  # Documentazione impianto di sensori
+        '5.8': 1.0,  # Definizione piano di manutenzione
+
+        '6.1': 3.0,  # Verifica e funzionamento dei pannelli
+        '6.2': 3.0,  # Controllo della qualità del sistema di irrigazione
+        '6.3': 1.0,  # Monitoraggio dei parametri ambientali
+        '6.4': 2.5,  # Rilascio del sito e delle infrastrutture
+        '6.5': 1.5,  # Validazione dei risultati
+        '6.6': 1.5,  # Analisi conclusiva e redazione del report finale
+        '6.7': 1.0,  # Riconsegna dati al cliente e agli stakeholder
+        '6.8': 1.0,  # Chiusura amministrativa e lezioni apprese
+
+        '7.1': 1.0,  # Sviluppo del piano di comunicazione
+        '7.2': 1.0,  # Creazione di materiale informativo e promozionale
+        '7.3': 1.0,  # Creazione di partnership con organizzazioni locali
+        '7.4': 2.0,  # Inaugurazione e presentazione pubblica del progetto
+        '7.5': 1.0,  # Raccolta feedback della comunità
+        '7.6': 2.0   # Rilascio di aggiornamenti periodici
     }
+
 
     # Calcolo dei costi settimanali
     costi = ripartisci_costi(costo_totale, attivita_per_settimana, pesi_attivita)
@@ -229,5 +377,16 @@ def __main__():
 
     print(f"Totale trimrstre 8: " + '\033[1m' + locale.format_string('%.2f', totale_trimestre, grouping=True) + " €" '\033[0m' )
     print('\033[1m' + f"Totale progetto: {locale.format_string('%.2f', totale_progetto, grouping=True)} €"+ '\033[0m')
+
+    totale_progetto=0
+    costo_per_attivita = costi_attivita(costo_totale, attivita_per_settimana, pesi_attivita)
+    for attivita, costo in costo_per_attivita.items():
+        print(f"L'attività {attivita} ha un costo totale di: {costo:.2f} €")
+        totale_progetto+=costo
+    print('\033[1m' + f"Totale progetto: {locale.format_string('%.2f', totale_progetto, grouping=True)} €"+ '\033[0m')
+
+    # Esegui la funzione
+    costi_settimanali, costi_trimestrali = calcola_e_stampa_costi(costo_per_attivita, attivita_per_settimana)
+
 if __name__ == "__main__":
     __main__()
