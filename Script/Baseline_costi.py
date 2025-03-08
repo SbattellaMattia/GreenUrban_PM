@@ -1,7 +1,11 @@
 import locale
+import pandas as pd
+
+locale.setlocale(locale.LC_ALL, '')
+
 
 # Imposta la localizzazione italiana
-locale.setlocale(locale.LC_ALL, 'it_IT.UTF-8')
+#locale.setlocale(locale.LC_ALL, 'it_IT.UTF-8')
 
 
 def ripartisci_costi(costo_totale, attivita_per_settimana, pesi_attivita):
@@ -117,6 +121,10 @@ def calcola_e_stampa_costi(costo_per_attivita, attivita_per_settimana):
 
     # Distribuisce il costo di ogni attività nelle settimane in cui è presente
     for settimana_idx, settimana in enumerate(attivita_per_settimana):
+        if settimana_idx==4: costi_settimanali[settimana_idx] += 10000
+        if settimana_idx == 11: costi_settimanali[settimana_idx] += 15000
+        if settimana_idx == 12: costi_settimanali[settimana_idx] += 10000
+        if settimana_idx == 32: costi_settimanali[settimana_idx] += 14500
         for attivita in settimana:
             if attivita in costo_per_attivita and attivita in frequenza_attivita:
                 costi_settimanali[settimana_idx] += costo_per_attivita[attivita] / frequenza_attivita[attivita]
@@ -387,6 +395,22 @@ def __main__():
 
     # Esegui la funzione
     costi_settimanali, costi_trimestrali = calcola_e_stampa_costi(costo_per_attivita, attivita_per_settimana)
+
+    settimane = [f"settimana {i+1}" for i in range(92)]
+
+    # Calcolo dei costi cumulativi
+    costi_cumulativi = [sum(costi_settimanali[:i + 1]) for i in range(len(costi_settimanali))]
+
+    df = pd.DataFrame({
+        "Settimana": settimane,
+        "Costo Incrementale (€)": costi_settimanali,
+        "Costo Cumulativo (€)": costi_cumulativi
+    })
+
+    # Salvataggio in un file Excel
+    df.to_excel("costi_settimanali.xlsx", index=False, engine='openpyxl')
+
+    print("File Excel 'costi_settimanali.xlsx' creato con successo!")
 
 if __name__ == "__main__":
     __main__()
