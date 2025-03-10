@@ -12,7 +12,7 @@ def get_pdf_files():
         match = re.match(r"(\d+)-", filename)  # Prende il numero iniziale prima di '-'
         return int(match.group(1)) if match else float('inf')  # Se non c'è numero, va in fondo
 
-    pdf_files = [f for f in os.listdir() if f.endswith(".pdf") and f not in ["index.pdf", "index_with_links.pdf", "0- Frontespizio.pdf", "output.pdf", ]]
+    pdf_files = [f for f in os.listdir() if f.endswith(".pdf") and f not in ["index.pdf", "index_with_links.pdf", "0- Frontespizio.pdf", "GreenUrban.pdf", "ReticoloGreenUrban.pdf" ]]
     return sorted(pdf_files, key=extract_number)  # Ordina in base al numero
 
 def clean_filename(filename):
