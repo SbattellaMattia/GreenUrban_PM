@@ -85,7 +85,7 @@ def costi_attivita(costo_totale, attivita_per_settimana, pesi_attivita):
         costo_proporzionale = (frequenza * pesi_attivita[attivita]) / peso_totale * costo_totale
         costo_per_attivita[attivita] = costo_proporzionale
 
-
+        #DESELEZIONARE PER BASELINE NORMALE NON AGGIORNATA
         #42.000 di rincaro
         if (attivita=='2.4'):
             costo_per_attivita[attivita]+= 5500
@@ -121,6 +121,8 @@ def calcola_e_stampa_costi(costo_per_attivita, attivita_per_settimana):
 
     # Distribuisce il costo di ogni attività nelle settimane in cui è presente
     for settimana_idx, settimana in enumerate(attivita_per_settimana):
+
+        # DESELEZIONARE PER BASELINE NORMALE NON AGGIORNATA
         if settimana_idx==4: costi_settimanali[settimana_idx] += 10000
         if settimana_idx == 11: costi_settimanali[settimana_idx] += 15000
         if settimana_idx == 12: costi_settimanali[settimana_idx] += 10000
